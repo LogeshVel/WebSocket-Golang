@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <head>
+  <title>WebSocket</title>
 <style>
 * {
   box-sizing: border-box;
@@ -41,6 +42,26 @@
     margin: 0 auto;
 }
 
+.sentNotify {
+  margin-left: 20px;
+  color: #000000;
+}
+.receiveNotify {
+  margin-left: 20px;
+  color: #000000;
+}
+
+.sentNotify em {
+  color: #0db55a;
+}
+.receiveNotify em {
+  color: #766aff;
+}
+
+p {
+  font-size: 18px;
+}
+
 </style>
 </head>
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -49,12 +70,13 @@
 <h1 style="background-color:#ffffff;justify-content: center;display: flex;">Simple WebSocket client</h1>
     	
     <div id="root" class="row">
-    	<div id="statuscolumn" class="column p-container" style="background-color:#bbb;">
-                <p id="sts">Connection Status :</p>
-                <p id="wsStatus">Connecting...</p>
+      <p style="margin-left: 15px">Server <b>localhost:8090/ws</b></p>
+    	<div id="statuscolumn" class="column p-container">
+                <p id="sts"><b>Connection Status :</b></p>
+                <p id="wsStatus" style="color:#065256"><b>Connecting...</b></p>
         </div>
-        <div id="sendmsgcolumn" class="column" style="background-color:#eee;">
-        	<form action="" class="w3-container" onkeydown="return event.key != 'Enter';">
+        <div id="sendmsgcolumn" class="column" style="padding-left: 10px;">
+        	<form action="" class="w3-container" onkeydown="return event.key != 'Enter';" style="background-color:rgb(247, 231, 255); padding: 10px;">
                 <label for="tosndmsg">Message to send</label>
                 <input class="w3-input" type="text" id="tosndmsg" name="msgtosnd"><br><br>
                 <button type="button" class="button" onclick="handleinputmessage()">Send</button>
@@ -73,36 +95,44 @@
             const wsStatusp = document.getElementById('wsStatus');
             const newElement = document.createElement('p');
             newElement.setAttribute("id","wsStatus")
-            newElement.textContent = 'Connected to WebSocket';
+            newElement.setAttribute("style","color: #0a9511")
+            newElement.innerHTML = '<b>Connected</b>';
             stscolumn.replaceChild(newElement, wsStatusp);
-
+            
             const newMsgElement = document.createElement('p');
-            newMsgElement.textContent = "Sent: ".concat(initialMsg)
+            newMsgElement.setAttribute("class","sentNotify")
+            newMsgElement.innerHTML=`<p><em>Sent: </em> ${initialMsg}</p>`
             root.appendChild(newMsgElement);
         }
+        
         socket.onclose = (event) =>{
             console.log("Disconnected", event)
             const stscolumn = document.getElementById('statuscolumn');
             const wsStatusp = document.getElementById('wsStatus');
             const newElement = document.createElement('p');
             newElement.setAttribute("id","wsStatus")
-            newElement.textContent = 'Disconnected from WebSocket';
+            newElement.setAttribute("style","color: #ef1316")
+            newElement.innerHTML = '<b>Disconnected</b>';
             stscolumn.replaceChild(newElement, wsStatusp);
         }
+        
         socket.onmessage = (event) =>{
             console.log("received msg", event)
             console.log("Data", event["data"])
             const newElement = document.createElement('p');
-            newElement.textContent = "Received: ".concat(event["data"])
+            newElement.setAttribute("class","receiveNotify")
+            newElement.innerHTML=`<p><em>Received: </em> ${event["data"]}</p>`
             root.appendChild(newElement);
         }
+        
         handleinputmessage = () =>{
             var input = document.getElementById("tosndmsg").value;
             console.log(input);
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(input)
                 const newElement = document.createElement('p');
-                newElement.textContent = "Sent: ".concat(input)
+                newElement.setAttribute("class","sentNotify")
+                newElement.innerHTML=`<p><em>Sent: </em> ${input}</p>`
                 root.appendChild(newElement);
               }
             else{
