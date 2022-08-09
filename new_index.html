@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<head>
+<style>
+* {
+  box-sizing: border-box;
+}
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+}
+
+/* Responsive layout - makes a two column-layout instead of four columns */
+@media screen and (max-width: 900px) {
+  .column  {
+    width: 50%;
+  }
+}
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+  .column  {
+    width: 100%;
+  }
+}
+.p-container{
+  display: flex;
+  gap: .5rem;
+}
+</style>
+</head>
+<body>
+
+<h1 style="background-color:#ffffff;justify-content: center;display: flex;">Simple WebSocket client</h1>
+    	
+    <div id="root" class="row" style="background-color:#aaa;">
+    	<div id="statuscolumn" class="column p-container">
+                <p id="sts">Connection Status :</p>
+                <p id="wsStatus">Connecting...</p>
+        </div>
+        <div id="sendmsgcolumn" class="column">
+        	<form>
+                <label for="tosndmsg">Message to send</label>
+                <input type="text" id="tosndmsg" name="msgtosnd"><br><br>
+                <input type="submit" onclick="handleinputmessage()">
+            </form>
+        </div>
+        
+    </div>
+    <script>
+        let socket = new WebSocket("ws://localhost:8090/ws")
+        const root = document.getElementById('root');
+        socket.onopen = () => {
+            console.log("Successfully connected")
+            socket.send("Hi Server. Im JS Client")
+            const stscolumn = document.getElementById('statuscolumn');
+            const wsStatusp = document.getElementById('wsStatus');
+            const newElement = document.createElement('p');
+            newElement.setAttribute("id","wsStatus")
+            newElement.textContent = 'Connected to WebSocket';
+            stscolumn.replaceChild(newElement, wsStatusp);
+        }
+        socket.onclose = (event) =>{
+            console.log("Disconnected", event)
+            const stscolumn = document.getElementById('statuscolumn');
+            const wsStatusp = document.getElementById('wsStatus');
+            const newElement = document.createElement('p');
+            newElement.setAttribute("id","wsStatus")
+            newElement.textContent = 'Disconnected from WebSocket';
+            stscolumn.replaceChild(newElement, wsStatusp);
+        }
+        socket.onmessage = (event) =>{
+            console.log("received msg", event)
+            console.log("Data", event["data"])
+            const newElement = document.createElement('p');
+            newElement.textContent = event["data"]
+            root.appendChild(newElement);
+        }
+        handleinputmessage = () =>{
+            var input = document.getElementById("tosndmsg").value;
+            alert(input);
+        }
+    </script>
+</body>
