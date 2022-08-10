@@ -33,7 +33,7 @@ func readAndEcho(ws *websocket.Conn) {
 		log.Printf("The Received Message is %v \n", msg)
 		log.Println("Echo the same messgae")
 		// echo the same msg
-		if err := ws.WriteMessage(msgType, []byte(fmt.Sprintf("The Echo : %s", msg))); err != nil {
+		if err := ws.WriteMessage(msgType, []byte(fmt.Sprintf("Echo : %s", msg))); err != nil {
 			log.Println(err)
 		}
 		// type ResJson struct {
@@ -48,9 +48,10 @@ func writeMsg(ws *websocket.Conn) {
 	for {
 		time.Sleep(time.Second * 10)
 		log.Println("Writing the message to the client")
-		msg := time.Now()
-		log.Println(msg.GoString())
-		if err := ws.WriteMessage(1, []byte(msg.GoString())); err != nil {
+		nowTime := time.Now()
+		msg := nowTime.UTC()
+		log.Println(msg)
+		if err := ws.WriteMessage(1, []byte(msg.String())); err != nil {
 			log.Println(err)
 			return
 		}
