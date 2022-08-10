@@ -59,6 +59,11 @@ func writeMsg(ws *websocket.Conn) {
 }
 
 func getWSConn(w http.ResponseWriter, req *http.Request) {
+	log.Println(req)
+	log.Println("################Request Headers################")
+	for h := range req.Header {
+		fmt.Printf("%s : %s\n", h, req.Header[h])
+	}
 	log.Println("Received new Client connection")
 	ws, err := wsUpgrader.Upgrade(w, req, nil)
 	if err != nil {
