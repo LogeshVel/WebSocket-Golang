@@ -13,7 +13,7 @@ import (
 var wsUpgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-	CheckOrigin:     func(r *http.Request) bool { return true }, // */*
+	CheckOrigin:     func(r *http.Request) bool { return true }, // */* accept all
 }
 
 func rootfunc(w http.ResponseWriter, req *http.Request) {
@@ -68,6 +68,7 @@ func getWSConn(w http.ResponseWriter, req *http.Request) {
 	ws, err := wsUpgrader.Upgrade(w, req, nil)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 	log.Println("Client upgrade to WS success")
 	go writeMsg(ws)
